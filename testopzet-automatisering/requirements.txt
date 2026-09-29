@@ -1,0 +1,6 @@
+anthropic
+requests
+pyyaml
+jinja2
+python-dotenv
+pytest

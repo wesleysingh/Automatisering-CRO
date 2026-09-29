@@ -1,0 +1,57 @@
+name: Testopzet automatisering
+
+on:
+  # Vangnet: eens per uur alle klanten controleren (het directe seintje komt van een Jira Automation-regel)
+  schedule:
+    - cron: "7 * * * *"
+  # Direct starten, handmatig of vanuit Jira Automation via de GitHub API (inputs: client + issue)
+  workflow_dispatch:
+    inputs:
+      client:
+        description: "Klant-slug (leeg = alle klanten)"
+        required: false
+      issue:
+        description: "Eén subtaak verwerken, bijv. CRO-123 (vereist klant)"
+        required: false
+      dry_run:
+        description: "Dry-run (niets schrijven)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: testopzet
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: testopzet-automatisering
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      # Eén Atlassian-site voor alle klanten; een nieuwe klant vereist hier geen wijziging.
+      ATLASSIAN_EMAIL: ${{ secrets.ATLASSIAN_EMAIL }}
+      ATLASSIAN_TOKEN: ${{ secrets.ATLASSIAN_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: testopzet-automatisering/requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Tests
+        run: pytest -q
+      - name: Subtaken verwerken
+        env:
+          INPUT_CLIENT: ${{ inputs.client }}
+          INPUT_ISSUE: ${{ inputs.issue }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=()
+          if [ -n "$INPUT_CLIENT" ]; then args+=(--client "$INPUT_CLIENT"); else args+=(--all); fi
+          if [ -n "$INPUT_ISSUE" ]; then args+=(--issue "$INPUT_ISSUE"); fi
+          if [ "$INPUT_DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          python tools/poll_jira.py "${args[@]}"

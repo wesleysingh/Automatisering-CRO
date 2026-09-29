@@ -1,0 +1,4 @@
+# Gedeelde instellingen voor alle klanten. Een klant-yaml kan elke waarde hier overschrijven.
+atlassian_url: https://wesleysingh.atlassian.net
+subtaak_naam: Testopzet uitwerken
+kpi_hypothese: bestellingen

@@ -1,0 +1,17 @@
+# Sjabloon voor een nieuwe klant: kopieer naar clients/<klant>.yaml en vul in.
+# Bestanden die met _ beginnen worden overgeslagen door --all.
+# Standaardwaarden (Atlassian-site, KPI, labels) staan in _standaard.yaml.
+# De paginatitel is de naam van de Jira-taak (bijv. "XX 016 - <titel>").
+
+naam: Webshopnaam                       # gebruikt in de prompt
+jira_project: XX                        # projectkey van het CRO-bord van deze klant
+parent_page_id: "000000"                # ID van de pagina of map in de Confluence-space van de klant
+                                        # waaronder de testpagina's komen
+webshop_context: ""                     # korte omschrijving: assortiment, doelgroep, bijzonderheden
+vanaf_datum: ""                         # bijv. "2026-10-01": alleen subtaken die vanaf deze datum op Gereed gingen
+
+# Optioneel:
+# kpi_hypothese: purchasers             # als deze klant een andere KPI-term gebruikt
+# template: testpagina_klant.xml.j2     # eigen paginatemplate in templates/
+# atlassian_url: https://klant.atlassian.net   # alleen als deze klant op een eigen Atlassian-site zit;
+# secrets_prefix: KLANT                        # dan KLANT_ATLASSIAN_EMAIL/_TOKEN als secrets toevoegen

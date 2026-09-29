@@ -1,0 +1,5 @@
+naam: VerfPlaza
+jira_project: CRO
+parent_page_id: "17072138"                   # "A/B testen" in de space Wesley Singh (Overzicht > A/B testen)
+webshop_context: "Webshop in verf en schildersbenodigdheden (o.a. mengkleuren op maat)."
+vanaf_datum: "2026-09-29"                    # voorkomt dat oude afgeronde subtaken alsnog pagina's krijgen
