@@ -1,9 +1,10 @@
 name: Testopzet automatisering
 
 on:
-  # Vangnet: eens per uur alle klanten controleren (het directe seintje komt van een Jira Automation-regel)
+  # Vangnet: twee keer per dag alle klanten controleren (het directe seintje komt van een Jira Automation-regel).
+  # Tijden in UTC: 07:07 en 15:07 = 09:07 en 17:07 zomertijd, 08:07 en 16:07 wintertijd.
   schedule:
-    - cron: "7 * * * *"
+    - cron: "7 7,15 * * *"
   # Direct starten, handmatig of vanuit Jira Automation via de GitHub API (inputs: client + issue)
   workflow_dispatch:
     inputs:

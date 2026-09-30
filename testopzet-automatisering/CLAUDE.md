@@ -9,7 +9,7 @@ Automatisch de testopzet (Pre-test-sectie) van een A/B-test in Confluence aanmak
 Automatisering + Claude API (Jira Cloud, Confluence Cloud, Anthropic SDK).
 
 ## Frequentie
-Continu: GitHub Actions pollt elke 15 minuten.
+Direct via een Jira Automation-regel (subtaak op Gereed), met als vangnet twee controles per dag via GitHub Actions (ca. 09:00 en 17:00).
 
 ## Inputs
 - Jira Product Discovery-idee (titel + omschrijving), gevonden via subtaak → taak → delivery-link

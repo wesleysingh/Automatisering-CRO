@@ -9,7 +9,7 @@
    - maakt onder de testenpagina een pagina aan met exact de naam van de Jira-taak,
    - plaatst de link als commentaar op de subtaak en op het idee.
 
-Vangnet: GitHub controleert daarnaast elk uur alle klanten, voor het geval een seintje mislukt.
+Vangnet: GitHub controleert daarnaast twee keer per dag (rond 09:00 en 17:00) alle klanten, voor het geval een seintje mislukt.
 
 Er worden geen labels gebruikt. Het script ziet aan de Confluence-pagina (zelfde naam als de Jira-taak) of een subtaak al verwerkt is.
 4. Vul daarna zelf in: Testsegment, Significantielevel, MDE, Testperiode, KPI, Guardrail, Aanvullende metrics en de A/B-screenshots.
