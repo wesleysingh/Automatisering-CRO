@@ -130,6 +130,10 @@ class AtlassianClient:
             yield from data.get("results", [])
             path = data.get("_links", {}).get("next")
 
+    def move_page(self, page_id: str, position: str, target_id: str) -> None:
+        """Verplaatst een pagina in de paginaboom: `position` = before, after (zelfde niveau) of append (als kind)."""
+        self._request("PUT", f"/wiki/rest/api/content/{page_id}/move/{position}/{target_id}")
+
     def page_url(self, page: dict) -> str:
         webui = page.get("_links", {}).get("webui", "")
         return f"{self.base_url}/wiki{webui}" if webui else f"{self.base_url}/wiki/pages/viewpage.action?pageId={page['id']}"

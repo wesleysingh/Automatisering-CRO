@@ -4,13 +4,15 @@ Schrijven van een goed onderbouwde aanleiding en hypothese voor een A/B test op 
 
 - Begin elke aanleiding met "Uit [vorige test] of [onderzoek] blijkt dat". Behalve als er niet expliciet een inzicht uit vorig onderzoek bij staat. Begin dan met onderbouwing vanuit theorie of best practices.
 - Verwijs naar het inzicht uit [vorige test] wanneer er een vorige test is bijgevoegd, gebruik de belangrijkste inzichten als input voor deze vervolgtest.
+- Noem geen percentages of andere cijfers uit de resultaten van een vorige test. Beschrijf de inzichten algemeen (bijv. "een positieve trend" of "geen effect").
+- Splits inzichten uit een vorige test niet uit naar device (desktop/mobile), tenzij het verschil tussen devices de kern van deze vervolgtest is.
 - Benoem het woord "BOOM strategie" niet letterlijk in de aanleiding.
-- Onderbouw de aanleiding goed met psychologische principes uit theorie.
+- Onderbouw de aanleiding met de kern: waarom verwachten we dat deze wijziging werkt? Noem hooguit één psychologisch principe, en alleen als het echt iets toevoegt. Niet elke uitspraak hoeft onderbouwd te worden met theorie.
 - Gebruik altijd de Engelse termen voor psychologische principes, voorbeeld: geen "Risico aversie" maar "Risk Aversion".
 - Schrijf de hypothese volgens het als, dan, omdat format. Schrijf dit altijd achter elkaar op één regel.
   - Als is de wijziging die we testen
   - Dan is de KPI die we willen beïnvloeden (dit is altijd {kpi})
-  - Omdat is de verklaring waarom iets een bepaald effect heeft (uit de aanleiding)
+  - Omdat is de verklaring waarom iets een bepaald effect heeft (uit de aanleiding). Houd dit beknopt: alleen de belangrijkste verklaring, in maximaal 20 woorden.
 - Geef ook meteen aan welke optimalisatie strategie bij deze test hoort en beschrijf in het kort waarom (zie de optimalisatiestrategieën hieronder). Gebruik maximaal 2 zinnen
 - Het format moet zijn: aanleiding, hypothese, optimalisatie strategie.  Verzin geen andere onderdelen.
 - Gebruik indien bijgevoegd de uitkomsten van het vorige experiment voor het opzetten van de test.

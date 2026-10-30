@@ -10,4 +10,4 @@ Dit voorbeeld laat toon, lengte en opbouw zien. Er was hier geen vorige test, da
 
 ## Voorbeeld bij een vervolgtest
 
-Staat er een vorige test bij, dan begint de aanleiding met het inzicht daaruit, bijvoorbeeld: "Uit VP 012 blijkt dat het tonen van de leverdatum op mobile een positieve trend laat zien, maar dat ongeveer 30% van de mobiele bezoekers de leverdatum niet ziet. ..."
+Staat er een vorige test bij, dan begint de aanleiding met het inzicht daaruit, bijvoorbeeld: "Uit VP 012 blijkt dat het tonen van de leverdatum in het winkelmandje een positieve trend laat zien, maar dat een deel van de bezoekers de leverdatum niet opmerkt. ..."

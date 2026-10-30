@@ -6,7 +6,7 @@
 3. Zet je die subtaak op **Gereed**, dan stuurt een Jira Automation-regel direct een seintje naar GitHub Actions. Binnen 1 à 2 minuten:
    - leest het gekoppelde idee en eventuele Confluence-links naar een vorige test,
    - schrijft met Claude de aanleiding, hypothese en optimalisatiestrategie,
-   - maakt onder de testenpagina een pagina aan met exact de naam van de Jira-taak,
+   - maakt onder de testenpagina een pagina aan met exact de naam van de Jira-taak, direct onder de laatste test (bijv. na VP 017),
    - plaatst de link als commentaar op de subtaak en op het idee.
 
 Vangnet: GitHub controleert daarnaast twee keer per dag (rond 09:00 en 17:00) alle klanten, voor het geval een seintje mislukt.

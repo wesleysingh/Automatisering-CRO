@@ -140,7 +140,18 @@ def genoemde_testen(paginas: list[dict], test_titel: str, tekst: str) -> list[di
     return op_code + [page for _, page in op_naam.values()]
 
 
-def haal_vorige_testen(conf: AtlassianClient, space_id: str, test_titel: str, tekst: str) -> list[tuple[str, str, str]]:
+def laatste_test(paginas: list[dict], parent_id: str, test_titel: str) -> dict | None:
+    """De test met het hoogste nummer direct onder de testenpagina (bijv. "VP 017 - ..."), met dezelfde code als deze test."""
+    eigen = testcode(test_titel)
+    kandidaten = [
+        p for p in paginas
+        if str(p.get("parentId")) == parent_id and p["title"].strip() != test_titel and testcode(p["title"])
+        and (not eigen or testcode(p["title"])[0] == eigen[0])
+    ]
+    return max(kandidaten, key=lambda p: testcode(p["title"])[1], default=None)
+
+
+def haal_vorige_testen(conf: AtlassianClient, paginas: list[dict], test_titel: str, tekst: str) -> list[tuple[str, str, str]]:
     """(titel, tekst, url) van vorige testen: Confluence-links in het idee, plus testen die het idee noemt."""
     host = conf.base_url.split("//", 1)[1]
     page_ids = []
@@ -152,7 +163,7 @@ def haal_vorige_testen(conf: AtlassianClient, space_id: str, test_titel: str, te
             page_ids.append(page_id)
         else:
             log.warning("Kon geen pagina-ID halen uit %s", url)
-    page_ids += [p["id"] for p in genoemde_testen(list(conf.list_pages(space_id)), test_titel, tekst)]
+    page_ids += [p["id"] for p in genoemde_testen(paginas, test_titel, tekst)]
 
     testen = []
     for page_id in dict.fromkeys(page_ids):
@@ -173,7 +184,8 @@ def verwerk(klant: Klant, atl: AtlassianClient, space_id: str, subtaak: dict, dr
 
     idee = vind_idee(atl, subtaak)
     omschrijving = adf_to_text(idee["fields"].get("description"))
-    vorige = haal_vorige_testen(atl, space_id, titel, f"{idee['fields']['summary']}\n\n{omschrijving}")
+    paginas = list(atl.list_pages(space_id))
+    vorige = haal_vorige_testen(atl, paginas, titel, f"{idee['fields']['summary']}\n\n{omschrijving}")
     segment = maak_testsegment(veldwaarden(idee, "Pagina"), next(iter(veldwaarden(idee, "Devices", "Device")), None))
     log.info("%s: %s, idee %s, vorige test(en): %s, segment: %s", key, titel, idee["key"],
              ", ".join(t for t, _, _ in vorige) or "geen", segment or "onbekend")
@@ -200,6 +212,13 @@ def verwerk(klant: Klant, atl: AtlassianClient, space_id: str, subtaak: dict, dr
     page = atl.create_page(space_id, klant.parent_page_id, titel, xml)
     url = atl.page_url(page)
     log.info("%s: pagina aangemaakt: %s", key, url)
+    # Nieuwe pagina's komen onderaan; direct onder de laatste test zetten (zelfde niveau)
+    laatste = laatste_test(paginas, klant.parent_page_id, titel)
+    if laatste:
+        try:
+            atl.move_page(page["id"], "after", laatste["id"])
+        except AtlassianError as e:
+            log.warning("%s: kon pagina niet onder \"%s\" zetten: %s", key, laatste["title"], e)
     atl.add_comment(key, "Testopzet automatisch aangemaakt in Confluence:", (titel, url))
     atl.add_comment(idee["key"], "Testopzet aangemaakt:", (titel, url))
 

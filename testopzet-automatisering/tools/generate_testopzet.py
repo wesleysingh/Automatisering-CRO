@@ -13,6 +13,7 @@ MODEL = "claude-opus-5-5"
 KNOWLEDGE_DIR = Path(__file__).resolve().parent.parent / "knowledge"
 STRATEGIEEN = ["Ability", "Attention", "Motivation", "Certainty", "Choice Architecture"]
 MAX_WOORDEN_AANLEIDING = 150
+MAX_WOORDEN_OMDAT = 20
 
 SCHEMA = {
     "type": "object",
@@ -75,7 +76,8 @@ def user_prompt(invoer: Invoer, feedback: list[str] | None = None) -> str:
             delen.append(f"# Vorige test: {titel}\n\n{tekst}")
         delen.append(
             "Dit is een vervolgtest. Begin de aanleiding met \"Uit <code en naam vorige test> blijkt dat\" "
-            "en gebruik de belangrijkste inzichten uit de vorige test."
+            "en gebruik de belangrijkste inzichten uit de vorige test, algemeen beschreven: zonder percentages "
+            "of andere cijfers uit de resultaten en zonder uitsplitsing naar device, tenzij dat de kern van deze test is."
         )
     else:
         delen.append("Er is geen vorige test bijgevoegd.")
@@ -90,6 +92,9 @@ def valideer(data: dict, heeft_vorige_test: bool) -> list[str]:
     woorden = len(data["aanleiding"].split())
     if woorden > MAX_WOORDEN_AANLEIDING:
         fouten.append(f"De aanleiding heeft {woorden} woorden, maximaal {MAX_WOORDEN_AANLEIDING}.")
+    woorden = len(data["hypothese"]["omdat"].split())
+    if woorden > MAX_WOORDEN_OMDAT:
+        fouten.append(f"Het omdat-deel van de hypothese heeft {woorden} woorden, maximaal {MAX_WOORDEN_OMDAT}: alleen de belangrijkste verklaring.")
     alle_tekst = json.dumps(data, ensure_ascii=False)
     if re.search(r"[—–]", alle_tekst):
         fouten.append("Gebruik geen m-dashes of en-dashes (— of –).")

@@ -36,6 +36,12 @@ def test_dashes_niet_toegestaan(dash):
     assert any("dashes" in f for f in valideer(data, heeft_vorige_test=True))
 
 
+def test_te_lang_omdat_deel():
+    data = maak_testopzet()
+    data["hypothese"]["omdat"] = "reden " * 21
+    assert any("omdat-deel" in f for f in valideer(data, heeft_vorige_test=True))
+
+
 def test_boom_niet_in_aanleiding():
     fouten = valideer(maak_testopzet(aanleiding="Uit VP 012 blijkt dat de BOOM strategie werkt."), heeft_vorige_test=True)
     assert any("BOOM" in f for f in fouten)
@@ -188,6 +194,20 @@ def test_al_gemeld():
 
 
 # ------------------------------------------------------------ idee-velden en historie
+
+def test_laatste_test():
+    from poll_jira import laatste_test
+    paginas = [
+        {"id": "1", "parentId": "10", "title": "VP 017 - Prijs per liter"},
+        {"id": "2", "parentId": "10", "title": "VP 016 - Afrekenknop"},
+        {"id": "3", "parentId": "10", "title": "Backlog"},
+        {"id": "4", "parentId": 10, "title": "VP 018 - Roerstokje"},
+        {"id": "5", "parentId": "99", "title": "VP 050 - Ergens anders"},
+        {"id": "6", "parentId": "10", "title": "AB 060 - Andere klantcode"},
+    ]
+    assert laatste_test(paginas, "10", "VP 019 - Nieuw")["id"] == "4"
+    assert laatste_test(paginas, "10", "VP 018 - Roerstokje")["id"] == "1"
+    assert laatste_test([], "10", "VP 019 - Nieuw") is None
 
 def test_veldwaarden_op_naam():
     from poll_jira import veldwaarden
