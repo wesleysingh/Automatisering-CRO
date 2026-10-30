@@ -5,16 +5,20 @@
 2. Via "Create delivery ticket" ontstaat een taak op het CRO-bord (bijv. `VP 016 - Afrekenknop bovenaan weghalen`), met subtaak **Testopzet uitwerken**.
 3. Zet je die subtaak op **Gereed**, dan stuurt een Jira Automation-regel direct een seintje naar GitHub Actions. Binnen 1 à 2 minuten:
    - leest het gekoppelde idee en eventuele Confluence-links naar een vorige test,
-   - schrijft met Claude de aanleiding, hypothese, optimalisatiestrategie en psychologisch principe,
+   - schrijft met Claude de aanleiding, hypothese en optimalisatiestrategie,
    - maakt onder de testenpagina een pagina aan met exact de naam van de Jira-taak,
    - plaatst de link als commentaar op de subtaak en op het idee.
 
 Vangnet: GitHub controleert daarnaast twee keer per dag (rond 09:00 en 17:00) alle klanten, voor het geval een seintje mislukt.
 
 Er worden geen labels gebruikt. Het script ziet aan de Confluence-pagina (zelfde naam als de Jira-taak) of een subtaak al verwerkt is.
-4. Vul daarna zelf in: Testsegment, Significantielevel, MDE, Testperiode, KPI, Guardrail, Aanvullende metrics en de A/B-screenshots.
+4. Automatisch ingevuld, controleer en pas aan waar nodig:
+   - **Testsegment**: uit de velden *Pagina* en *Devices* van het idee, bijv. "Alle bezoekers die de PDP bezoeken". Het device wordt alleen genoemd bij Desktop of Mobile ("Alle mobile bezoekers die de PDP bezoeken"). Leeg als *Pagina* niet is ingevuld.
+   - Vaste waarden uit de template: Significantielevel 80%, MDE "x% (x weken)", Testperiode 5 mei 2026 - 8 juni 2026 (datumvelden), KPI Purchasers, Guardrail metric AOV, Aanvullende metrics Omzet.
 
-**Vervolgtest?** Plak de link naar de Confluence-pagina van de vorige test in de omschrijving van het idee. De aanleiding begint dan met "Uit <vorige test> blijkt dat…".
+   Vul daarna zelf MDE, Testperiode en de A/B-screenshots in.
+
+**Vervolgtest?** Noem de vorige test in de titel of omschrijving van het idee: met de code (bijv. "VP 012"), met de naam (bijv. "leverdatum in winkelmandje"; bij meerdere testen met die naam wordt de laatste genomen) of met een link naar de Confluence-pagina. Het script zoekt de testpagina op in de space van de klant, gebruikt de inzichten ervan en maakt de vermelding in de aanleiding klikbaar. De aanleiding begint dan met "Uit <vorige test> blijkt dat…".
 
 ## Nieuwe klant toevoegen
 Alle klanten staan op `wesleysingh.atlassian.net`, met per klant een eigen Confluence-space, CRO-project en Discovery-project.

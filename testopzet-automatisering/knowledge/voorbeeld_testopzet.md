@@ -8,8 +8,6 @@ Dit voorbeeld laat toon, lengte en opbouw zien. Er was hier geen vorige test, da
 
 **Optimalisatiestrategie:** Certainty (Door de verwachte leverdatum op een cruciaal moment in de klantreis te tonen, verminderen we onzekerheid over het bestelproces. Meer transparantie over de levering vergroot het vertrouwen en verlaagt de kans dat bezoekers afhaken.)
 
-**Psychologisch principe:** Risk Aversion (Mensen vermijden situaties waarvan de uitkomst onzeker is. Door duidelijk te communiceren wanneer de bestelling wordt geleverd, wordt het waargenomen risico kleiner en voelen bezoekers zich zekerder om de aankoop af te ronden.)
-
 ## Voorbeeld bij een vervolgtest
 
 Staat er een vorige test bij, dan begint de aanleiding met het inzicht daaruit, bijvoorbeeld: "Uit VP 012 blijkt dat het tonen van de leverdatum op mobile een positieve trend laat zien, maar dat ongeveer 30% van de mobiele bezoekers de leverdatum niet ziet. ..."

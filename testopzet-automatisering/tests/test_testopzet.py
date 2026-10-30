@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from adf_to_text import adf_to_text, extract_urls, storage_to_text
-from build_page import render
+from build_page import maak_testsegment, render
 from generate_testopzet import GeneratieFout, Invoer, genereer, normaliseer, system_prompt, valideer
 
 
@@ -13,7 +13,6 @@ def maak_testopzet(**overrides):
         "aanleiding": "Uit VP 012 blijkt dat 30% van de mobiele bezoekers de leverdatum niet ziet.",
         "hypothese": {"als": "we de leverdatum bovenaan tonen", "dan": "stijgen de bestellingen", "omdat": "bezoekers meer zekerheid hebben"},
         "optimalisatiestrategie": {"naam": "Certainty", "toelichting": "Minder onzekerheid over levering."},
-        "psychologisch_principe": {"naam": "Risk Aversion", "toelichting": "Mensen vermijden onzekere uitkomsten."},
     }
     data.update(overrides)
     return data
@@ -33,7 +32,7 @@ def test_te_lange_aanleiding():
 @pytest.mark.parametrize("dash", ["—", "–"])
 def test_dashes_niet_toegestaan(dash):
     data = maak_testopzet()
-    data["psychologisch_principe"]["toelichting"] = f"Zekerheid {dash} vertrouwen"
+    data["optimalisatiestrategie"]["toelichting"] = f"Zekerheid {dash} vertrouwen"
     assert any("dashes" in f for f in valideer(data, heeft_vorige_test=True))
 
 
@@ -103,6 +102,38 @@ def test_render_bevat_onderdelen_en_escapet():
         assert kop in xml
 
 
+def test_render_vaste_velden():
+    xml = render(maak_testopzet(), testsegment="Alle bezoekers die de PDP bezoeken")
+    for regel in ["Testsegment:</strong> Alle bezoekers die de PDP bezoeken", "Significantielevel:</strong> 80%",
+                  "MDE:</strong> x% (x weken)", '<time datetime="2026-05-05" /> - <time datetime="2026-06-08" />',
+                  "KPI:</strong> Purchasers", "Guardrail metric:</strong> AOV", "<li><p>Omzet</p></li>"]:
+        assert regel in xml
+
+
+def test_render_linkt_vorige_test_en_maakt_alineas():
+    data = maak_testopzet(aanleiding="Uit VP 012 blijkt dat 30% het mist.\n\nVanuit theorie <weten> we meer.")
+    xml = render(data, vorige_testen=[("VP 012 - Leverdatum in winkelmandje", "https://x/wiki/pages/1?a=1&b=2")])
+    assert 'Uit <a href="https://x/wiki/pages/1?a=1&amp;b=2">VP 012</a> blijkt dat 30% het mist.</p>' \
+           '<p>Vanuit theorie &lt;weten&gt; we meer.' in xml
+
+
+def test_render_linkt_volledige_titel_als_die_er_staat():
+    data = maak_testopzet(aanleiding="Uit VP 012 - Leverdatum in winkelmandje blijkt dat VP 012 werkt.")
+    xml = render(data, vorige_testen=[("VP 012 - Leverdatum in winkelmandje", "https://x/1")])
+    assert '<a href="https://x/1">VP 012 - Leverdatum in winkelmandje</a> blijkt dat VP 012 werkt.' in xml
+
+
+@pytest.mark.parametrize("paginas, device, verwacht", [
+    (["PDP"], "Alle", "Alle bezoekers die de PDP bezoeken"),
+    (["PDP"], "Mobile", "Alle mobile bezoekers die de PDP bezoeken"),
+    (["PDP", "Cart"], "Desktop", "Alle desktop bezoekers die de PDP of de Cart bezoeken"),
+    (["Alle"], "Mobile", "Alle mobile bezoekers"),
+    ([], "Mobile", ""),
+])
+def test_testsegment(paginas, device, verwacht):
+    assert maak_testsegment(paginas, device) == verwacht
+
+
 # ------------------------------------------------------------------ adf/tekst
 
 def test_adf_to_text_met_links_en_lijsten():
@@ -154,3 +185,25 @@ def test_al_gemeld():
     assert al_gemeld("2026-09-29T12:40:00+00:00", gereed)       # fout ná Gereed: niet opnieuw
     assert not al_gemeld("2026-09-29T12:00:00+00:00", gereed)   # opnieuw op Gereed gezet na de fout
     assert not al_gemeld(None, gereed)
+
+
+# ------------------------------------------------------------ idee-velden en historie
+
+def test_veldwaarden_op_naam():
+    from poll_jira import veldwaarden
+    idee = {"names": {"customfield_1": "Pagina", "customfield_2": "Devices"},
+            "fields": {"customfield_1": [{"value": "PDP"}, {"value": "Cart"}], "customfield_2": {"value": "Mobile"}}}
+    assert veldwaarden(idee, "Pagina") == ["PDP", "Cart"]
+    assert veldwaarden(idee, "Device", "Devices") == ["Mobile"]
+    assert veldwaarden(idee, "Onbekend") == []
+
+
+def test_genoemde_testen():
+    from poll_jira import genoemde_testen
+    paginas = [{"id": str(i), "title": t} for i, t in enumerate([
+        "VP 012 - Leverdatum in winkelmandje", "VP 014 - Leverdatum in winkelmandje (vervolgtest)",
+        "VP 003 - Weghalen omschrijving kleuren PDP", "VP 016 - Afrekenknop bovenaan weghalen", "Template"])]
+    titels = lambda tekst: [p["title"] for p in genoemde_testen(paginas, "VP 016 - Afrekenknop bovenaan weghalen", tekst)]
+    assert titels("Zie VP003, en VP 16 zelf") == ["VP 003 - Weghalen omschrijving kleuren PDP"]
+    assert titels("Net als bij de leverdatum in winkelmandje test") == ["VP 014 - Leverdatum in winkelmandje (vervolgtest)"]
+    assert titels("VP 0123 en VP 1") == []

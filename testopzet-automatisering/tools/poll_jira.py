@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -23,7 +24,7 @@ sys.path.insert(0, str(PROJECT_DIR.parent / "shared" / "tools"))
 
 from adf_to_text import adf_to_text, extract_urls, storage_to_text  # noqa: E402
 from atlassian_client import AtlassianClient, AtlassianError  # noqa: E402
-from build_page import render  # noqa: E402
+from build_page import maak_testsegment, render, testcode  # noqa: E402
 from generate_testopzet import GeneratieFout, Invoer, genereer  # noqa: E402
 
 log = logging.getLogger("testopzet")
@@ -105,25 +106,58 @@ def vind_idee(jira: AtlassianClient, subtaak: dict) -> dict:
         gelinkt = link.get("inwardIssue") or link.get("outwardIssue")
         if not gelinkt:
             continue
-        kandidaat = jira.get_issue(gelinkt["key"], fields=["summary", "description", "project"])
+        kandidaat = jira.get_issue(gelinkt["key"], fields=["*all"], expand="names")
         if kandidaat["fields"]["project"].get("projectTypeKey") == "product_discovery":
             return kandidaat
     raise Overslaan(f"Geen Discovery-idee gevonden dat gekoppeld is aan {parent['key']}.")
 
 
-def haal_vorige_testen(conf: AtlassianClient, omschrijving: str) -> list[tuple[str, str]]:
-    """Leest Confluence-pagina's waarnaar in de idee-omschrijving gelinkt wordt."""
+def veldwaarden(idee: dict, *namen: str) -> list[str]:
+    """Waarden van een (select-)veld op het idee, gezocht op veldnaam (het veld-ID verschilt per project)."""
+    gezocht = {n.lower() for n in namen}
+    for veld_id, naam in (idee.get("names") or {}).items():
+        if naam.lower() in gezocht:
+            waarde = idee["fields"].get(veld_id)
+            items = waarde if isinstance(waarde, list) else [waarde]
+            return [i["value"] if isinstance(i, dict) else str(i) for i in items if i]
+    return []
+
+
+def genoemde_testen(paginas: list[dict], test_titel: str, tekst: str) -> list[dict]:
+    """Historische testpagina's die in het idee genoemd worden, op code ("VP 012") of op naam."""
+    op_code, op_naam = [], {}
+    for page in paginas:
+        code = testcode(page["title"])
+        if not code or page["title"].strip() == test_titel:
+            continue
+        if re.search(rf"\b{code[0]}[\s-]?0*{code[1]}(?!\d)", tekst, re.IGNORECASE):
+            op_code.append(page)
+            continue
+        # Naam zonder code en toevoeging, bijv. "Leverdatum in winkelmandje"; bij herhaling de laatste test
+        naam = re.sub(r"\s*\(.*?\)\s*$", "", page["title"].split(" - ", 1)[-1]).strip().lower()
+        if len(naam) >= 10 and naam in tekst.lower() and code[1] > op_naam.get(naam, (0, None))[0]:
+            op_naam[naam] = (code[1], page)
+    return op_code + [page for _, page in op_naam.values()]
+
+
+def haal_vorige_testen(conf: AtlassianClient, space_id: str, test_titel: str, tekst: str) -> list[tuple[str, str, str]]:
+    """(titel, tekst, url) van vorige testen: Confluence-links in het idee, plus testen die het idee noemt."""
     host = conf.base_url.split("//", 1)[1]
-    testen = []
-    for url in extract_urls(omschrijving):
+    page_ids = []
+    for url in extract_urls(tekst):
         if host not in url or "/wiki/" not in url:
             continue
         page_id = conf.resolve_page_id(url)
-        if not page_id:
+        if page_id:
+            page_ids.append(page_id)
+        else:
             log.warning("Kon geen pagina-ID halen uit %s", url)
-            continue
+    page_ids += [p["id"] for p in genoemde_testen(list(conf.list_pages(space_id)), test_titel, tekst)]
+
+    testen = []
+    for page_id in dict.fromkeys(page_ids):
         page = conf.get_page(page_id, body_format="storage")
-        testen.append((page["title"], storage_to_text(page["body"]["storage"]["value"])))
+        testen.append((page["title"], storage_to_text(page["body"]["storage"]["value"]), conf.page_url(page)))
     return testen
 
 
@@ -139,20 +173,22 @@ def verwerk(klant: Klant, atl: AtlassianClient, space_id: str, subtaak: dict, dr
 
     idee = vind_idee(atl, subtaak)
     omschrijving = adf_to_text(idee["fields"].get("description"))
-    vorige = haal_vorige_testen(atl, omschrijving)
-    log.info("%s: %s, idee %s, %d vorige test(en)", key, titel, idee["key"], len(vorige))
+    vorige = haal_vorige_testen(atl, space_id, titel, f"{idee['fields']['summary']}\n\n{omschrijving}")
+    segment = maak_testsegment(veldwaarden(idee, "Pagina"), next(iter(veldwaarden(idee, "Devices", "Device")), None))
+    log.info("%s: %s, idee %s, vorige test(en): %s, segment: %s", key, titel, idee["key"],
+             ", ".join(t for t, _, _ in vorige) or "geen", segment or "onbekend")
 
     testopzet = genereer(Invoer(
         test_titel=titel,
         idee_titel=idee["fields"]["summary"],
         idee_omschrijving=omschrijving,
-        vorige_testen=vorige,
+        vorige_testen=[(t, tekst) for t, tekst, _ in vorige],
         webshop=klant.naam,
         webshop_context=klant.webshop_context,
         kpi=klant.kpi_hypothese,
     ))
 
-    xml = render(testopzet, klant.template)
+    xml = render(testopzet, klant.template, vorige_testen=[(t, url) for t, _, url in vorige], testsegment=segment)
 
     if dry_run:
         TMP_DIR.mkdir(exist_ok=True)

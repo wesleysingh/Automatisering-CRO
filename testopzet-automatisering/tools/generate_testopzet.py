@@ -1,4 +1,4 @@
-"""Genereert de testopzet (aanleiding, hypothese, strategie, principe) met de Claude API."""
+"""Genereert de testopzet (aanleiding, hypothese, optimalisatiestrategie) met de Claude API."""
 
 from __future__ import annotations
 
@@ -14,13 +14,6 @@ KNOWLEDGE_DIR = Path(__file__).resolve().parent.parent / "knowledge"
 STRATEGIEEN = ["Ability", "Attention", "Motivation", "Certainty", "Choice Architecture"]
 MAX_WOORDEN_AANLEIDING = 150
 
-_TOELICHTING = {
-    "type": "object",
-    "properties": {"naam": {"type": "string"}, "toelichting": {"type": "string"}},
-    "required": ["naam", "toelichting"],
-    "additionalProperties": False,
-}
-
 SCHEMA = {
     "type": "object",
     "properties": {
@@ -33,18 +26,13 @@ SCHEMA = {
             "additionalProperties": False,
         },
         "optimalisatiestrategie": {
-            **_TOELICHTING,
+            "type": "object",
             "properties": {"naam": {"type": "string", "enum": STRATEGIEEN}, "toelichting": {"type": "string"}},
-        },
-        "psychologisch_principe": {
-            **_TOELICHTING,
-            "properties": {
-                "naam": {"type": "string", "description": "Engelse term, bijv. Risk Aversion"},
-                "toelichting": {"type": "string"},
-            },
+            "required": ["naam", "toelichting"],
+            "additionalProperties": False,
         },
     },
-    "required": ["aanleiding", "hypothese", "optimalisatiestrategie", "psychologisch_principe"],
+    "required": ["aanleiding", "hypothese", "optimalisatiestrategie"],
     "additionalProperties": False,
 }
 

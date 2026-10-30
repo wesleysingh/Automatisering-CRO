@@ -13,7 +13,8 @@ Direct via een Jira Automation-regel (subtaak op Gereed), met als vangnet twee c
 
 ## Inputs
 - Jira Product Discovery-idee (titel + omschrijving), gevonden via subtaak → taak → delivery-link
-- Confluence-links in de omschrijving van het idee → vorige test(en)
+- Confluence-links in de omschrijving van het idee, en testen die het idee op code of naam noemt → vorige test(en)
+- Velden *Pagina* en *Devices* van het idee → testsegment
 - `knowledge/`: schrijfinstructies, optimalisatiestrategieën, voorbeeld-testopzet
 - `clients/<klant>.yaml`: configuratie per webshop (aangevuld met `clients/_standaard.yaml`)
 
@@ -21,7 +22,7 @@ Direct via een Jira Automation-regel (subtaak op Gereed), met als vangnet twee c
 Eén site (`wesleysingh.atlassian.net`) voor alle klanten. Per klant: eigen Confluence-space (met testenpagina of -map), eigen CRO-project en eigen Discovery-project; de klant krijgt toegang tot zijn eigen space/projecten.
 
 ## Outputs
-- Confluence-pagina met exact de naam van de Jira-taak (bijv. `VP 016 - ...`) onder `parent_page_id`, met ingevulde aanleiding, hypothese, optimalisatiestrategie en psychologisch principe; overige velden leeg voor handmatige invulling
+- Confluence-pagina met exact de naam van de Jira-taak (bijv. `VP 016 - ...`) onder `parent_page_id`, met ingevulde aanleiding (met link naar genoemde vorige testen), hypothese, optimalisatiestrategie en testsegment (uit de idee-velden Pagina/Devices); vaste standaardwaarden voor significantielevel, MDE, testperiode en metrics; de A/B-tabel leeg voor handmatige invulling
 - Commentaar met link op de Jira-subtaak en het idee (geen labels)
 
 ## Workflows

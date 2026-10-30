@@ -66,8 +66,12 @@ class AtlassianClient:
             if not token or data.get("isLast", True):
                 return
 
-    def get_issue(self, key: str, fields: list[str]) -> dict:
-        return self._get(f"/rest/api/3/issue/{key}", fields=",".join(fields))
+    def get_issue(self, key: str, fields: list[str], expand: str | None = None) -> dict:
+        """`expand="names"` geeft ook de veldnamen mee (handig voor custom fields, waarvan het ID per project verschilt)."""
+        params = {"fields": ",".join(fields)}
+        if expand:
+            params["expand"] = expand
+        return self._get(f"/rest/api/3/issue/{key}", **params)
 
     def get_issue_property(self, key: str, prop: str) -> dict | None:
         """Onzichtbare issue-eigenschap (entity property), of None als die niet bestaat."""
@@ -117,6 +121,14 @@ class AtlassianClient:
             "body": {"representation": "storage", "value": storage_xml},
         }
         return self._request("POST", "/wiki/api/v2/pages", json=body).json()
+
+    def list_pages(self, space_id: str) -> Iterator[dict]:
+        """Alle pagina's in een space (pagineert automatisch)."""
+        path = f"/wiki/api/v2/spaces/{space_id}/pages?limit=250"
+        while path:
+            data = self._get(path if path.startswith("/wiki") else f"/wiki{path}")
+            yield from data.get("results", [])
+            path = data.get("_links", {}).get("next")
 
     def page_url(self, page: dict) -> str:
         webui = page.get("_links", {}).get("webui", "")
