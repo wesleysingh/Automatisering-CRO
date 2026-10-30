@@ -44,7 +44,7 @@ class Klant:
     parent_page_id: str
     secrets_prefix: str = ""
     subtaak_naam: str = "Testopzet uitwerken"
-    kpi_hypothese: str = "bestellingen"
+    kpi_hypothese: str = "purchasers"
     webshop_context: str = ""
     vanaf_datum: str = ""
     template: str = "testpagina.xml.j2"

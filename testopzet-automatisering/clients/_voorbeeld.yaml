@@ -11,7 +11,7 @@ webshop_context: ""                     # korte omschrijving: assortiment, doelg
 vanaf_datum: ""                         # bijv. "2026-10-01": alleen subtaken die vanaf deze datum op Gereed gingen
 
 # Optioneel:
-# kpi_hypothese: purchasers             # als deze klant een andere KPI-term gebruikt
+# kpi_hypothese: bestellingen           # als deze klant een andere KPI-term gebruikt (standaard: purchasers)
 # template: testpagina_klant.xml.j2     # eigen paginatemplate in templates/
 # atlassian_url: https://klant.atlassian.net   # alleen als deze klant op een eigen Atlassian-site zit;
 # secrets_prefix: KLANT                        # dan KLANT_ATLASSIAN_EMAIL/_TOKEN als secrets toevoegen

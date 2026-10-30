@@ -11,7 +11,7 @@ from generate_testopzet import GeneratieFout, Invoer, genereer, normaliseer, sys
 def maak_testopzet(**overrides):
     data = {
         "aanleiding": "Uit VP 012 blijkt dat 30% van de mobiele bezoekers de leverdatum niet ziet.",
-        "hypothese": {"als": "we de leverdatum bovenaan tonen", "dan": "stijgen de bestellingen", "omdat": "bezoekers meer zekerheid hebben"},
+        "hypothese": {"als": "we de leverdatum bovenaan tonen", "dan": "stijgen de purchasers", "omdat": "bezoekers meer zekerheid hebben"},
         "optimalisatiestrategie": {"naam": "Certainty", "toelichting": "Minder onzekerheid over levering."},
     }
     data.update(overrides)
@@ -55,9 +55,9 @@ def test_vervolgtest_moet_met_uit_beginnen():
 
 def test_normaliseer_haalt_sleutelwoorden_en_punten_weg():
     data = maak_testopzet()
-    data["hypothese"] = {"als": "Als we X doen,", "dan": "dan stijgen de bestellingen", "omdat": "omdat Y."}
+    data["hypothese"] = {"als": "Als we X doen,", "dan": "dan stijgen de purchasers", "omdat": "omdat Y."}
     data = normaliseer(data)
-    assert data["hypothese"] == {"als": "we X doen", "dan": "stijgen de bestellingen", "omdat": "Y"}
+    assert data["hypothese"] == {"als": "we X doen", "dan": "stijgen de purchasers", "omdat": "Y"}
 
 
 def test_system_prompt_vult_kpi_in():
@@ -81,7 +81,7 @@ class NepClient:
         return SimpleNamespace(stop_reason="end_turn", stop_details=None, content=[blok])
 
 
-INVOER = Invoer("VP 015 - Leverdatum bovenaan", "Leverdatum", "Omschrijving", [("VP 012 - Leverdatum", "Inzichten...")], "VerfPlaza", "", "bestellingen")
+INVOER = Invoer("VP 015 - Leverdatum bovenaan", "Leverdatum", "Omschrijving", [("VP 012 - Leverdatum", "Inzichten...")], "VerfPlaza", "", "purchasers")
 
 
 def test_genereer_probeert_opnieuw_met_feedback():
@@ -102,7 +102,7 @@ def test_render_bevat_onderdelen_en_escapet():
     data = maak_testopzet(aanleiding="Prijs < €50 & gratis verzending")
     xml = render(data)
     assert "Prijs &lt; €50 &amp; gratis verzending" in xml
-    assert "H1: <strong>Als</strong> we de leverdatum bovenaan tonen, <strong>dan</strong> stijgen de bestellingen, " \
+    assert "H1: <strong>Als</strong> we de leverdatum bovenaan tonen, <strong>dan</strong> stijgen de purchasers, " \
            "<strong>omdat</strong> bezoekers meer zekerheid hebben." in xml
     for kop in ["Pre-test", "Testsegment:", "MDE:", "Guardrail metric:", "Raportage", "Vervolgtest"]:
         assert kop in xml
