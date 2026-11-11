@@ -1,11 +1,11 @@
-"""Verfplaza-huisstijl voor grafieken. Leest alle waarden uit ../tokens.json.
+"""Huisstijl Wesley Singh voor grafieken. Leest alle waarden uit ../tokens.json.
 
 Gebruik:
-    from verfplaza_style import apply_matplotlib, plotly_template
+    from huisstijl import apply_matplotlib, plotly_template
     apply_matplotlib()
     fig.update_layout(template=plotly_template())
 
-`python verfplaza_style.py [uitvoer.png]` rendert een voorbeeldgrafiek.
+`python huisstijl.py [uitvoer.png]` rendert een voorbeeldgrafiek.
 """
 import json
 from pathlib import Path
@@ -19,7 +19,7 @@ FONT_STACK = [FONT, *_TOKENS["typografie"]["fallback"]]
 
 
 def apply_matplotlib():
-    """Zet matplotlib-rcParams op Verfplaza-stijl."""
+    """Zet matplotlib-rcParams op huisstijl Wesley Singh."""
     import matplotlib as mpl
     from cycler import cycler
 
@@ -29,7 +29,7 @@ def apply_matplotlib():
         "axes.prop_cycle": cycler(color=CATEGORISCH),
         "axes.edgecolor": GRAFIEK["rasterlijn"],
         "axes.labelcolor": GRAFIEK["as_tekst"],
-        "axes.titlecolor": KLEUREN["navy"],
+        "axes.titlecolor": KLEUREN["inkt"],
         "axes.titleweight": "bold",
         "axes.titlesize": 14,
         "axes.titlelocation": "left",
@@ -42,7 +42,7 @@ def apply_matplotlib():
         "grid.linewidth": 0.8,
         "xtick.color": GRAFIEK["as_tekst"],
         "ytick.color": GRAFIEK["as_tekst"],
-        "text.color": KLEUREN["navy"],
+        "text.color": KLEUREN["tekst"],
         "figure.facecolor": KLEUREN["wit"],
         "axes.facecolor": KLEUREN["wit"],
         "legend.frameon": False,
@@ -52,12 +52,12 @@ def apply_matplotlib():
 
 
 def plotly_template():
-    """Geeft een plotly-template in Verfplaza-stijl terug."""
+    """Geeft een plotly-template in huisstijl Wesley Singh terug."""
     import plotly.graph_objects as go
 
     return go.layout.Template(layout=go.Layout(
-        font=dict(family=", ".join(FONT_STACK), color=KLEUREN["navy"], size=13),
-        title=dict(font=dict(size=18, color=KLEUREN["navy"]), x=0, xanchor="left"),
+        font=dict(family=", ".join(FONT_STACK), color=KLEUREN["tekst"], size=13),
+        title=dict(font=dict(size=18, color=KLEUREN["inkt"]), x=0, xanchor="left"),
         colorway=CATEGORISCH,
         paper_bgcolor=KLEUREN["wit"],
         plot_bgcolor=KLEUREN["wit"],
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     apply_matplotlib()
-    uit = sys.argv[1] if len(sys.argv) > 1 else "verfplaza_voorbeeld.png"
+    uit = sys.argv[1] if len(sys.argv) > 1 else "huisstijl_voorbeeld.png"
     devices = ["Mobiel", "Desktop", "Tablet"]
     controle, variant = [2.1, 3.4, 2.6], [2.4, 3.5, 2.9]
     x = range(len(devices))

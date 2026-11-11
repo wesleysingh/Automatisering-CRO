@@ -25,7 +25,7 @@ Wanneer Claude een project opstart:
 | `schedule` | Terugkerende of geplande taken | elke dag, wekelijks, automatisch, cron |
 | `loop` | Herhalende monitoring/polling | poll, houd bij, blijf controleren, interval |
 | `init` | Nieuw project opzetten | nieuw project, leeg project, initialiseer |
-| `verfplaza-huisstijl` | Grafieken, presentaties en documenten in Verfplaza-huisstijl (`.claude/skills/verfplaza-huisstijl/`) | Verfplaza, huisstijl, grafiek, chart, slides, presentatie, rapport |
+| `wesley-singh-huisstijl` | Grafieken, presentaties en documenten in eigen huisstijl, ook voor klanten (`.claude/skills/wesley-singh-huisstijl/`) | huisstijl, grafiek, chart, slides, presentatie, rapport, analyse |
 
 ---
 
