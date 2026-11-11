@@ -21,7 +21,7 @@ Bron: wesleysingh.nl (CSS + logo). Alle waarden staan in [tokens.json](tokens.js
 
 - **Font:** Open Sans (400 tekst, 600 medium, 700 koppen); fallback Arial.
 - **Vorm:** afgeronde hoeken (4–8 px), veel wit, rustig. Knoppen donkerblauw met een harde schaduw `0 2px 0 0 #0B181F`; geen verlopen.
-- **Logo:** [assets/logo.png](assets/logo.png) (beeldmerk + "WESLEY SINGH" + tagline "van aannames naar inzichten"), transparant, 350×96 px. Plaats het op wit of een licht vlak (op donkerblauw komt het teal te weinig uit, dus gebruik daar een wit afgerond vlak). Niet vergroten boven ±350 px breed, anders wordt het onscherp.
+- **Logo:** [assets/logo.png](assets/logo.png) (beeldmerk + "WESLEY SINGH" + tagline "van aannames naar inzichten"), transparant, 501×151 px. Plaats het op wit of een licht vlak (op donkerblauw komt het teal te weinig uit, dus gebruik daar een wit afgerond vlak). Niet vergroten boven ±500 px breed (±6 cm in print), anders wordt het onscherp.
 - **Tone of voice:** direct, no-nonsense en datagedreven. Spreek aan met **je/jouw**. Kernbelofte: *van aannames naar inzichten*. Formuleer concreet en resultaatgericht (conversie, omzet), zonder vakjargon of overdrijving.
 
 ## Per outputtype
